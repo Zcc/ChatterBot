@@ -16,6 +16,8 @@ class BaseMatchAdapter(TieBreaking, LogicAdapter):
             "tie_breaking_method",
             "first_response"
         )
+        self.statement_list = []
+
 
     @property
     def has_storage_context(self):

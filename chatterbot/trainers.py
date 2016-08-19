@@ -45,7 +45,7 @@ class ChatterBotCorpusTrainer(Trainer):
 
     def train(self, *corpora):
         trainer = ListTrainer(self.storage)
-
+        print("training.......")
         for corpus in corpora:
             corpus_data = self.corpus.load_corpus(corpus)
             for data in corpus_data:

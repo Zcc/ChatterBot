@@ -13,14 +13,15 @@ class ClosestMatchAdapter(BaseMatchAdapter):
     of each statement.
     """
 
+
     def get(self, input_statement):
         """
         Takes a statement string and a list of statement strings.
         Returns the closest matching statement from the list.
         """
-        statement_list = self.context.storage.get_response_statements()
-
-        if not statement_list:
+        if len(self.statement_list) == 0:
+            self.statement_list = self.context.storage.get_response_statements()
+        if not self.statement_list:
             if self.has_storage_context:
                 # Use a randomly picked statement
                 return 0, self.context.storage.get_random()
@@ -31,7 +32,7 @@ class ClosestMatchAdapter(BaseMatchAdapter):
         closest_match = input_statement
 
         # Find the closest matching known statement
-        for statement in statement_list:
+        for statement in self.statement_list:
             ratio = fuzz.ratio(input_statement.text, statement.text)
 
             if ratio > confidence:
