@@ -1,5 +1,6 @@
 from .logic_adapter import LogicAdapter
 from .closest_match import ClosestMatchAdapter
+from .closest_cosine import ClosestCosineAdapter
 from .closest_meaning import ClosestMeaningAdapter
 from .time_adapter import TimeLogicAdapter
 from .multi_adapter import MultiLogicAdapter

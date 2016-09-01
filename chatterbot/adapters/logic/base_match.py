@@ -17,6 +17,7 @@ class BaseMatchAdapter(TieBreaking, LogicAdapter):
             "first_response"
         )
         self.statement_list = []
+        self.tfidf_model = None
 
 
     @property
