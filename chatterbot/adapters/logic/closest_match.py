@@ -48,6 +48,6 @@ class ClosestMatchAdapter(BaseMatchAdapter):
 
         # Convert the confidence integer to a percent
         confidence /= 100.0
-
+        print(confidence, closest_match)
         return confidence, closest_match
 

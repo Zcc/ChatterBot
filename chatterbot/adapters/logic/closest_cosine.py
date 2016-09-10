@@ -15,6 +15,15 @@ class ClosestCosineAdapter(BaseMatchAdapter):
     of each statement.
     """
 
+    def __init__(self, **kwargs):
+        super(ClosestCosineAdapter, self).__init__(**kwargs)
+
+        self.tfidf_model = None
+        self.dictionary = None
+        self.corpus = None
+        self.corpus_vec = None
+
+
     def getCorpus(self, dic, sentencelist):
         return [dic.doc2bow(t) for t in self.segmentlist(sentencelist)]
 
@@ -25,7 +34,7 @@ class ClosestCosineAdapter(BaseMatchAdapter):
         return [w.strip() for w in open(data_file, encoding='utf-8').readlines()]
 
     def segment(self, sentence):
-        stopwords = self.Stopwords()
+        # stopwords = self.Stopwords()
         # stopwords = []
         # print len(stopwords),stopwords[:10]
         # return [w for w in jieba.cut(str(sentence)) if w not in stopwords]
@@ -67,9 +76,9 @@ class ClosestCosineAdapter(BaseMatchAdapter):
 
         if (self.tfidf_model is None):
             print('init tfidf model....')
-            sentencelist = [str(statement.text) for statement in self.statement_list]
-            print('segment sentencelist....')
-            seg = self.segmentlist(sentencelist)
+            #sentencelist = [str(statement.text) for statement in self.statement_list]
+            #print('segment sentencelist....')
+            seg = [sw.get_segment_text() for sw in self.statement_list]
             print('built dictionary....')
             self.dictionary = corpora.Dictionary(seg)
             self.corpus = [self.dictionary.doc2bow(t) for t in seg]

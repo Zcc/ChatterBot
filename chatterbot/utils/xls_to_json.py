@@ -19,6 +19,6 @@ def xlsxprocess(xlsname, max, sheet=1, qcol=1, acol=2):
     return qadict
 
 if __name__ == '__main__':
-    qadict = xlsxprocess('../corpus/data/test/finance.xlsx',-1,1,6,7)
-    with open('../corpus/data/test/finance.json','w',encoding='utf-8') as f:
+    qadict = xlsxprocess('/Volumes/Transcend/code/ChatterBot/chatterbot/corpus/data/jianhang/jianhang.xlsx',-1,1,1,2)
+    with open('/Volumes/Transcend/code/ChatterBot/chatterbot/corpus/data/jianhang/jianhang.json','w',encoding='utf-8') as f:
         json.dump(qadict,f)

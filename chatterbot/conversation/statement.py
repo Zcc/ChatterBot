@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from .response import Response
-
+from jieba import cut
 
 class Statement(object):
     """
@@ -18,6 +18,7 @@ class Statement(object):
             del(kwargs["in_response_to"])
 
         self.extra_data.update(kwargs)
+        self.add_segment_text()
 
     def __str__(self):
         return self.text
@@ -33,6 +34,11 @@ class Statement(object):
             return self.text == other.text
 
         return self.text == other
+
+    def add_segment_text(self):
+
+        segment_text = [w for w in cut(self.text)]
+        self.add_extra_data("segment_text", segment_text)
 
     def add_extra_data(self, key, value):
         """
@@ -72,6 +78,9 @@ class Statement(object):
                 self.in_response_to.remove(response)
                 return True
         return False
+
+    def get_segment_text(self):
+        return self.extra_data["segment_text"]
 
     def get_response_count(self, statement):
         """

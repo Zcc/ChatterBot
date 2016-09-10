@@ -17,7 +17,6 @@ class BaseMatchAdapter(TieBreaking, LogicAdapter):
             "first_response"
         )
         self.statement_list = []
-        self.tfidf_model = None
 
 
     @property
@@ -44,16 +43,23 @@ class BaseMatchAdapter(TieBreaking, LogicAdapter):
 
     def process(self, input_statement):
 
-        # Select the closest match to the input statement
-        confidence, closest_match = self.get(input_statement)
-
-        # Save any updates made to the statement by the logic adapter
-        self.context.storage.update(closest_match)
-
-        # Get all statements that are in response to the closest match
         response_list = self.context.storage.filter(
-            in_response_to__contains=closest_match.text
+            in_response_to__contains=input_statement.text
         )
+
+        if response_list:
+            confidence = 1
+        else:
+            # Select the closest match to the input statement
+            confidence, closest_match = self.get(input_statement)
+
+            # Save any updates made to the statement by the logic adapter
+            self.context.storage.update(closest_match)
+
+            # Get all statements that are in response to the closest match
+            response_list = self.context.storage.filter(
+                in_response_to__contains=closest_match.text
+            )
 
         if response_list:
             response = self.break_tie(response_list, self.tie_breaking_method)
