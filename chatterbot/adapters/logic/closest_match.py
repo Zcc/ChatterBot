@@ -20,6 +20,7 @@ class ClosestMatchAdapter(BaseMatchAdapter):
         Returns the closest matching statement from the list.
         """
         if len(self.statement_list) == 0:
+            print("loading data.....")
             self.statement_list = self.context.storage.get_response_statements()
         if not self.statement_list:
             if self.has_storage_context:
@@ -48,6 +49,6 @@ class ClosestMatchAdapter(BaseMatchAdapter):
 
         # Convert the confidence integer to a percent
         confidence /= 100.0
-        print(confidence, closest_match)
+        #print(confidence, closest_match)
         return confidence, closest_match
 

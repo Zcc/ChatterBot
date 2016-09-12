@@ -22,7 +22,7 @@ class ClosestCosineAdapter(BaseMatchAdapter):
         self.dictionary = None
         self.corpus = None
         self.corpus_vec = None
-
+        #self.index = None
 
     def getCorpus(self, dic, sentencelist):
         return [dic.doc2bow(t) for t in self.segmentlist(sentencelist)]
@@ -63,6 +63,7 @@ class ClosestCosineAdapter(BaseMatchAdapter):
         Returns the closest matching statement from the list.
         """
         if len(self.statement_list) == 0:
+            print("loading data.....")
             self.statement_list = self.context.storage.get_response_statements()
         if not self.statement_list:
             if self.has_storage_context:
@@ -76,8 +77,8 @@ class ClosestCosineAdapter(BaseMatchAdapter):
 
         if (self.tfidf_model is None):
             print('init tfidf model....')
-            #sentencelist = [str(statement.text) for statement in self.statement_list]
-            #print('segment sentencelist....')
+            # sentencelist = [str(statement.text) for statement in self.statement_list]
+            # print('segment sentencelist....')
             seg = [sw.get_segment_text() for sw in self.statement_list]
             print('built dictionary....')
             self.dictionary = corpora.Dictionary(seg)
@@ -85,6 +86,7 @@ class ClosestCosineAdapter(BaseMatchAdapter):
             print('training tfidf model....')
             self.tfidf_model = models.TfidfModel(self.corpus)
             self.corpus_vec = self.tfidf_model[self.corpus]
+            #self.index = similarities.MatrixSimilarity[self.tfidf_model[self.corpus]]
 
         query_bow = self.getCorpus(self.dictionary, [str(input_statement.text)])
 
@@ -104,5 +106,5 @@ class ClosestCosineAdapter(BaseMatchAdapter):
 
         # Convert the confidence integer to a percent
         # confidence /= 100.0
-        print(str(confidence),closest_match.text)
+        # print(str(confidence), closest_match.text)
         return confidence, closest_match

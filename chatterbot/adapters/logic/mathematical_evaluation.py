@@ -42,12 +42,12 @@ class MathematicalEvaluation(LogicAdapter):
 
         # Returning important information
         try:
-            expression += "= " + str(eval(expression))
+            input_text += " = " + str(eval(expression))
 
             # return a confidence of 1 if the expression could be evaluated
-            return 1, Statement(expression)
+            return 1, Statement(input_text)
         except:
-            return 0, Statement(expression)
+            return 0, Statement(input_text)
 
     def simplify_chunks(self, input_text):
         """

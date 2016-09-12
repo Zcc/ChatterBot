@@ -9,7 +9,7 @@ class Statement(object):
     """
 
     def __init__(self, text, **kwargs):
-        self.text = text
+        self.text = str(text)
         self.in_response_to = kwargs.get("in_response_to", [])
 
         self.extra_data = {}

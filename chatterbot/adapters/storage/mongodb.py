@@ -40,7 +40,7 @@ class MongoDatabaseAdapter(StorageAdapter):
         if not values:
             return None
 
-        del(values['text'])
+        del (values['text'])
 
         # Build the objects for the response list
         response_list = self.deserialize_responses(
@@ -59,7 +59,7 @@ class MongoDatabaseAdapter(StorageAdapter):
 
         for response in response_list:
             text = response["text"]
-            del(response["text"])
+            del (response["text"])
 
             in_response_to.append(
                 Response(text, **response)
@@ -88,7 +88,7 @@ class MongoDatabaseAdapter(StorageAdapter):
         for parameter in kwargs:
 
             if "__" in parameter:
-                del(filter_parameters[parameter])
+                del (filter_parameters[parameter])
 
                 kwarg_parts = parameter.split("__")
 
@@ -111,7 +111,7 @@ class MongoDatabaseAdapter(StorageAdapter):
 
         for match in matches:
             statement_text = match['text']
-            del(match['text'])
+            del (match['text'])
 
             response_list = self.deserialize_responses(match["in_response_to"])
             match["in_response_to"] = response_list
@@ -136,7 +136,6 @@ class MongoDatabaseAdapter(StorageAdapter):
 
             # Make sure that an entry for each response is saved
             for response in statement.in_response_to:
-
                 # $setOnInsert does nothing if the document is not created
                 update_operation = UpdateOne(
                     {'text': response.text},
@@ -144,8 +143,10 @@ class MongoDatabaseAdapter(StorageAdapter):
                     upsert=True
                 )
                 operations.append(update_operation)
-
-            self.statements.bulk_write(operations, ordered=False)
+            try:
+                self.statements.bulk_write(operations, ordered=False)
+            except Exception as e:
+                pass
 
         return statement
 
@@ -167,7 +168,7 @@ class MongoDatabaseAdapter(StorageAdapter):
         values = list(statement)[0]
         statement_text = values['text']
 
-        del(values['text'])
+        del (values['text'])
         return Statement(statement_text, **values)
 
     def remove(self, statement_text):
@@ -189,22 +190,23 @@ class MongoDatabaseAdapter(StorageAdapter):
         in_response_to field. Otherwise, the logic adapter may find a closest
         matching statement that does not have a known response.
         """
+        """
         response_query = self.statements.distinct('in_response_to.text')
         statement_query = self.statements.find({
             'text': {
                 '$in': response_query
             }
         })
-
-        statement_list = list(statement_query)
+        """
+        statement_query = self.statements.find({"in_response_to": {"$size": 0}})
+        # statement_list = list(statement_query)
 
         statement_objects = []
-
-        for statement in statement_list:
+        for statement in statement_query:
             values = dict(statement)
             statement_text = values['text']
 
-            del(values['text'])
+            del (values['text'])
 
             response_list = self.deserialize_responses(values["in_response_to"])
             values["in_response_to"] = response_list

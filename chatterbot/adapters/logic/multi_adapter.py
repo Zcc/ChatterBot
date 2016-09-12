@@ -25,9 +25,12 @@ class MultiLogicAdapter(LogicAdapter):
         for adapter in self.adapters:
             if adapter.can_process(statement):
                 confidence, output = adapter.process(statement)
+                print(confidence, output, adapter.__class__)
                 if confidence > max_confidence:
                     result = output
                     max_confidence = confidence
+                if confidence == 1:
+                    break
 
         return max_confidence, result
 
