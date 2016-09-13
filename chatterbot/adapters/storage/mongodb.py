@@ -201,19 +201,20 @@ class MongoDatabaseAdapter(StorageAdapter):
         statement_query = self.statements.find({"in_response_to": {"$size": 0}})
         # statement_list = list(statement_query)
 
-        statement_objects = []
-        for statement in statement_query:
-            values = dict(statement)
-            statement_text = values['text']
+        # statement_objects = []
+        # for statement in statement_query:
+        #     values = statement
+        #     statement_text = values['text']
+        #
+        #     del (values['text'])
+        #
+        #     response_list = self.deserialize_responses(values["in_response_to"])
+        #     values["in_response_to"] = response_list
+        #
+        #     statement_objects.append(Statement(statement_text, **values))
 
-            del (values['text'])
-
-            response_list = self.deserialize_responses(values["in_response_to"])
-            values["in_response_to"] = response_list
-
-            statement_objects.append(Statement(statement_text, **values))
-
-        return statement_objects
+        return list(statement_query)
+        # return statement_query
 
     def drop(self):
         """

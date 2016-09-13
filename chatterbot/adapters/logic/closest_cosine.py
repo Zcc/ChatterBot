@@ -2,7 +2,8 @@
 from .base_match import BaseMatchAdapter
 import os
 import jieba
-from gensim import corpora, models, similarities
+from gensim import corpora, models
+from chatterbot.conversation import Statement
 
 
 class ClosestCosineAdapter(BaseMatchAdapter):
@@ -22,7 +23,8 @@ class ClosestCosineAdapter(BaseMatchAdapter):
         self.dictionary = None
         self.corpus = None
         self.corpus_vec = None
-        #self.index = None
+        self.inverted_index = {}
+        # self.index = None
 
     def getCorpus(self, dic, sentencelist):
         return [dic.doc2bow(t) for t in self.segmentlist(sentencelist)]
@@ -79,20 +81,27 @@ class ClosestCosineAdapter(BaseMatchAdapter):
             print('init tfidf model....')
             # sentencelist = [str(statement.text) for statement in self.statement_list]
             # print('segment sentencelist....')
-            seg = [sw.get_segment_text() for sw in self.statement_list]
+            seg = [sw["segment_text"] for sw in self.statement_list]
             print('built dictionary....')
             self.dictionary = corpora.Dictionary(seg)
+            for i in self.dictionary.keys():
+                self.inverted_index[i] = []
             self.corpus = [self.dictionary.doc2bow(t) for t in seg]
             print('training tfidf model....')
             self.tfidf_model = models.TfidfModel(self.corpus)
             self.corpus_vec = self.tfidf_model[self.corpus]
-            #self.index = similarities.MatrixSimilarity[self.tfidf_model[self.corpus]]
+            print('built Inverted Index....')
+            for i, cor in enumerate(self.corpus):
+                for w in cor:
+                    self.inverted_index[w[0]].append(i)
 
         query_bow = self.getCorpus(self.dictionary, [str(input_statement.text)])
+        wordsinlist = []
+        for word in query_bow[0]:
+            wordsinlist += self.inverted_index.get(word[0])
 
         query_vec = self.tfidf_model[query_bow][0]
-
-        for i, vec in enumerate(self.corpus_vec):
+        for i, vec in ((j, self.corpus_vec[j]) for j in wordsinlist):
             cosine = self.getCos(query_vec, vec)
             if cosine >= confidence:
                 closest_match = self.statement_list[i]
@@ -103,8 +112,11 @@ class ClosestCosineAdapter(BaseMatchAdapter):
             text_of_all_statements
         )
         '''
+        values = closest_match
+        statement_text = values['text']
 
+        del (values['text'])
         # Convert the confidence integer to a percent
         # confidence /= 100.0
         # print(str(confidence), closest_match.text)
-        return confidence, closest_match
+        return confidence, Statement(statement_text, **values)
