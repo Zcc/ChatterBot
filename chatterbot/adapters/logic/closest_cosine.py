@@ -4,6 +4,7 @@ import os
 import jieba
 from gensim import corpora, models
 from chatterbot.conversation import Statement
+import copy
 
 
 class ClosestCosineAdapter(BaseMatchAdapter):
@@ -77,23 +78,25 @@ class ClosestCosineAdapter(BaseMatchAdapter):
         confidence = -1
         closest_match = input_statement
 
-        if (self.tfidf_model is None):
+        if self.tfidf_model is None:
             print('init tfidf model....')
-            # sentencelist = [str(statement.text) for statement in self.statement_list]
-            # print('segment sentencelist....')
             seg = [sw["segment_text"] for sw in self.statement_list]
+
             print('built dictionary....')
             self.dictionary = corpora.Dictionary(seg)
-            for i in self.dictionary.keys():
-                self.inverted_index[i] = []
             self.corpus = [self.dictionary.doc2bow(t) for t in seg]
+
             print('training tfidf model....')
             self.tfidf_model = models.TfidfModel(self.corpus)
             self.corpus_vec = self.tfidf_model[self.corpus]
+
             print('built Inverted Index....')
             for i, cor in enumerate(self.corpus):
                 for w in cor:
-                    self.inverted_index[w[0]].append(i)
+                    if self.inverted_index.get(w[0]):
+                        self.inverted_index[w[0]].append(i)
+                    else:
+                        self.inverted_index[w[0]] = []
 
         query_bow = self.getCorpus(self.dictionary, [str(input_statement.text)])
         wordsinlist = []
@@ -112,11 +115,12 @@ class ClosestCosineAdapter(BaseMatchAdapter):
             text_of_all_statements
         )
         '''
-        values = closest_match
+        values = copy.deepcopy(closest_match)
+        print(values)
         statement_text = values['text']
 
         del (values['text'])
         # Convert the confidence integer to a percent
         # confidence /= 100.0
-        # print(str(confidence), closest_match.text)
+        print(str(self.__class__).split('.')[-1][:-2], str(confidence), statement_text)
         return confidence, Statement(statement_text, **values)

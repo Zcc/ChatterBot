@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from .base_match import BaseMatchAdapter
 from fuzzywuzzy import fuzz
-
+import copy
+from chatterbot.conversation import Statement
 
 class ClosestMatchAdapter(BaseMatchAdapter):
     """
@@ -34,7 +35,7 @@ class ClosestMatchAdapter(BaseMatchAdapter):
 
         # Find the closest matching known statement
         for statement in self.statement_list:
-            ratio = fuzz.ratio(str(input_statement.text), str(statement.text))
+            ratio = fuzz.ratio(str(input_statement.text), str(statement['text']))
 
             if ratio > confidence:
                 confidence = ratio
@@ -46,9 +47,13 @@ class ClosestMatchAdapter(BaseMatchAdapter):
             text_of_all_statements
         )
         '''
+        values = copy.deepcopy(closest_match)
+        # print(values)
+        statement_text = values['text']
 
+        del (values['text'])
         # Convert the confidence integer to a percent
         confidence /= 100.0
-        #print(confidence, closest_match)
-        return confidence, closest_match
+        print(str(self.__class__).split('.')[-1][:-2], confidence, statement_text)
+        return confidence, Statement(statement_text, **values)
 

@@ -7,7 +7,7 @@ bot = ChatBot("Terminal",
                   "chatterbot.adapters.logic.MathematicalEvaluation",
                   "chatterbot.adapters.logic.TimeLogicAdapter",
                   "chatterbot.adapters.logic.ClosestMatchAdapter",
-                  #"chatterbot.adapters.logic.ClosestCosineAdapter"
+                  "chatterbot.adapters.logic.ClosestCosineAdapter"
               ],
               input_adapter="chatterbot.adapters.input.VariableInputTypeAdapter",
               output_adapter="chatterbot.adapters.output.TerminalAdapter",
